@@ -742,8 +742,36 @@ body {
     overflow: visible;
   }
 
+  .nav-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .nav-label,
+  .nav-divider {
+    grid-column: 1 / -1;
+  }
+
   .nav-btn {
+    min-height: 48px;
     padding: 12px 14px;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .nav-btn-content {
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .nav-btn-content span:last-child {
+    white-space: normal;
+    line-height: 1.15;
+  }
+
+  .count-badge {
+    flex-shrink: 0;
   }
 
   .device-grid-area {
@@ -790,6 +818,10 @@ body {
 
   .nav-label {
     padding-inline: 12px;
+  }
+
+  .nav-group {
+    grid-template-columns: 1fr;
   }
 
   .nav-btn-content span:last-child {
