@@ -1,7 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  db, HOME_ID, devicesRef, floorsRef,
-  toggleDeviceState, updateSwitchState, subscribeToAlerts
+  db,
+  HOME_ID,
+  devicesRef,
+  floorsRef,
+  toggleDeviceState,
+  updateSwitchState,
+  subscribeToAlerts,
 } from "./firebase";
 import { onSnapshot } from "firebase/firestore";
 import DeviceCard from "./components/DeviceCard";
@@ -31,7 +36,7 @@ function App() {
       (err) => {
         console.error("Firestore error:", err);
         setIsConnected(false);
-      }
+      },
     );
 
     const unsubFloors = onSnapshot(floorsRef(HOME_ID), (snap) => {
@@ -59,14 +64,17 @@ function App() {
     }
   }, []);
 
-  const handleSwitchToggle = useCallback(async (deviceId, switchKey, currentState) => {
-    const newState = currentState === "ON" ? "OFF" : "ON";
-    try {
-      await updateSwitchState(deviceId, switchKey, newState);
-    } catch (err) {
-      console.error("Switch toggle error:", err);
-    }
-  }, []);
+  const handleSwitchToggle = useCallback(
+    async (deviceId, switchKey, currentState) => {
+      const newState = currentState === "ON" ? "OFF" : "ON";
+      try {
+        await updateSwitchState(deviceId, switchKey, newState);
+      } catch (err) {
+        console.error("Switch toggle error:", err);
+      }
+    },
+    [],
+  );
 
   // Filtering
   const filteredDevices = devices.filter((d) => {
@@ -83,7 +91,9 @@ function App() {
   const stats = {
     total: devices.length,
     active: devices.filter((d) => d.state === "ON").length,
-    errors: devices.filter((d) => d.state === "ERROR" || d.state === "DISCONNECTED").length,
+    errors: devices.filter(
+      (d) => d.state === "ERROR" || d.state === "DISCONNECTED",
+    ).length,
     cameras: devices.filter((d) => d.type === "CAMERA").length,
   };
 
@@ -113,9 +123,7 @@ function App() {
             }, {})}
           />
 
-          {alerts.length > 0 && (
-            <NotificationFeed alerts={alerts} />
-          )}
+          {alerts.length > 0 && <NotificationFeed alerts={alerts} />}
         </aside>
 
         <main className="device-grid-area">
@@ -123,7 +131,9 @@ function App() {
             <div className="empty-state">
               <div className="empty-icon">🏠</div>
               <h3>No devices found</h3>
-              <p>Try adjusting your filters or check your Firebase connection.</p>
+              <p>
+                Try adjusting your filters or check your Firebase connection.
+              </p>
             </div>
           ) : (
             <div className="device-grid">
