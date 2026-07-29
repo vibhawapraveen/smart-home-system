@@ -14,6 +14,7 @@
 
   --radius-card: 24px;
   --radius-pill: 100px;
+  /* Theme tokens: tweak these variables to change the overall look */
 }
 
 body {
@@ -67,15 +68,17 @@ body {
       rgba(253, 224, 71, 0.02) 0%,
       transparent 40%
     );
+  /* Subtle colored mesh overlay for depth and ambience */
   z-index: -1;
   animation: mesh-rotate 40s linear infinite;
   pointer-events: none;
 }
-
+/* Very slow rotation to keep the background feeling alive but subtle */
 @keyframes mesh-rotate {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -383,6 +386,8 @@ body {
   );
   border-color: rgba(var(--glow-color), 0.3);
 }
+/* When a card is "on", set `--glow-color` (e.g. "56,189,248") on the card element
+   to tint the card with an accent color. Use RGB values without the surrounding rgb(). */
 
 .glass-card.is-on:hover {
   border-color: rgba(var(--glow-color), 0.4);
@@ -492,6 +497,7 @@ body {
   transform: translateX(24px);
   background: rgb(var(--glow-color));
 }
+/* Toggle thumb slides to the right when enabled (visual state only). */
 
 .spinner {
   width: 12px;
@@ -501,6 +507,7 @@ body {
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -537,6 +544,7 @@ body {
   padding: 0;
   gap: 0;
 }
+
 .camera-container {
   position: relative;
 }
@@ -579,11 +587,13 @@ body {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(0.8);
   }
 }
+/* Pulse animation used for small status dots (online, recording, alerts). */
 
 .camera-feed {
   position: relative;
@@ -591,12 +601,15 @@ body {
   aspect-ratio: 16/9;
   background: #000;
 }
+/* Camera feed uses a 16:9 aspect ratio box; replace image or video inside this container. */
+
 .camera-feed img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0.8;
 }
+
 .camera-overlay {
   position: absolute;
   top: 0;
@@ -609,14 +622,17 @@ body {
   background: rgba(0, 0, 0, 0.2);
   transition: background 0.3s;
 }
+
 .camera-feed:hover .camera-overlay {
   background: rgba(0, 0, 0, 0.4);
 }
+
 .play-icon {
   font-size: 48px;
   color: rgba(255, 255, 255, 0.7);
   transition: transform 0.3s;
 }
+
 .camera-feed:hover .play-icon {
   transform: scale(1.1);
   color: #fff;
@@ -627,6 +643,7 @@ body {
   font-size: 12px;
   color: var(--text-muted);
 }
+
 .camera-url-panel code {
   background: rgba(255, 255, 255, 0.05);
   padding: 4px 8px;
@@ -664,181 +681,6 @@ body {
   border-radius: 24px;
   padding: 24px;
   margin-top: auto;
-}
-
-/* ═══════════════════════════════════════════
-   RESPONSIVE LAYOUT
-═══════════════════════════════════════════ */
-@media (max-width: 1100px) {
-  .glass-header {
-    flex-wrap: wrap;
-  }
-
-  .glass-search {
-    order: 3;
-    max-width: none;
-    width: 100%;
-    flex-basis: 100%;
-  }
-
-  .header-actions {
-    margin-left: auto;
-  }
-
-  .main-layout {
-    gap: 24px;
-  }
-
-  .device-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .app {
-    height: auto;
-    min-height: 100dvh;
-    overflow: auto;
-  }
-
-  .glass-header {
-    padding: 16px;
-    gap: 16px;
-    align-items: stretch;
-  }
-
-  .header-brand {
-    width: 100%;
-  }
-
-  .header-title {
-    font-size: 18px;
-  }
-
-  .glass-search {
-    height: 44px;
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .status-pill {
-    flex: 1;
-    justify-content: center;
-  }
-
-  .main-layout {
-    flex-direction: column;
-    overflow: visible;
-    padding: 16px;
-    gap: 16px;
-  }
-
-  .glass-sidebar {
-    width: 100%;
-    gap: 16px;
-    overflow: visible;
-  }
-
-  .nav-group {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .nav-label,
-  .nav-divider {
-    grid-column: 1 / -1;
-  }
-
-  .nav-btn {
-    min-height: 48px;
-    padding: 12px 14px;
-    justify-content: flex-start;
-    gap: 10px;
-  }
-
-  .nav-btn-content {
-    min-width: 0;
-    gap: 10px;
-  }
-
-  .nav-btn-content span:last-child {
-    white-space: normal;
-    line-height: 1.15;
-  }
-
-  .count-badge {
-    flex-shrink: 0;
-  }
-
-  .device-grid-area {
-    padding: 16px;
-    border-radius: 24px;
-    overflow: visible;
-  }
-
-  .device-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .glass-card {
-    padding: 16px;
-    gap: 16px;
-  }
-
-  .glass-alerts-panel {
-    padding: 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  .glass-header {
-    padding: 12px;
-  }
-
-  .header-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .status-pill {
-    width: 100%;
-  }
-
-  .alert-btn {
-    align-self: flex-end;
-  }
-
-  .glass-search input {
-    font-size: 14px;
-  }
-
-  .nav-label {
-    padding-inline: 12px;
-  }
-
-  .nav-group {
-    grid-template-columns: 1fr;
-  }
-
-  .nav-btn-content span:last-child {
-    font-size: 14px;
-  }
-
-  .card-title {
-    font-size: 16px;
-  }
-
-  .card-subtitle {
-    font-size: 12px;
-  }
-
-  .multi-switch-grid {
-    padding-top: 16px;
-  }
 }
 
 .alerts-header {
@@ -909,16 +751,334 @@ body {
 /* ═══════════════════════════════════════════
    SCROLLBAR
 ═══════════════════════════════════════════ */
+/* Thin, subtle scrollbar for webkit-based browsers. */
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — MEDIUM SCREENS (≤1100px)
+═══════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .glass-sidebar {
+    width: 220px;
+  }
+
+  .device-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — TABLET (≤850px)
+═══════════════════════════════════════════ */
+@media (max-width: 850px) {
+  .app {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  /* ── Sticky Header ── */
+  .glass-header {
+    flex-wrap: wrap;
+    padding: 12px 20px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-brand {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-title {
+    font-size: 17px;
+  }
+
+  .glass-search {
+    order: 3;
+    max-width: 100%;
+    width: 100%;
+    height: 42px;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .status-pill {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* ── Layout ── */
+  .main-layout {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    overflow: visible;
+  }
+
+  /* ── Sidebar: each nav-group is its own horizontal row ── */
+  .sidebar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .glass-sidebar {
+    width: 100%;
+    /* column so Spaces & Categories stack vertically */
+    flex-direction: column;
+    overflow: visible;
+    padding: 0;
+    gap: 8px;
+  }
+
+  .nav-group {
+    /* each group becomes its own horizontal scroll strip */
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 0 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .nav-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Show a compact section label above each strip */
+  .nav-label {
+    display: block;
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 0 4px 0 2px;
+    letter-spacing: 0.8px;
+    align-self: center;
+  }
+
+  .nav-divider {
+    /* hide the vertical divider between groups; groups are now stacked */
+    display: none;
+  }
+
+  .nav-btn {
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    min-height: 40px;
+  }
+
+  .count-badge {
+    display: none;
+    /* hide counts on mobile for cleaner look */
+  }
+
+  /* ── Device Grid ── */
+  .device-grid-area {
+    padding: 20px;
+    border-radius: 24px;
+    overflow: visible;
+    flex: none;
+  }
+
+  .device-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── Alerts panel ── */
+  .glass-alerts-panel {
+    margin-top: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — LARGE MOBILE (≤600px)
+═══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .glass-header {
+    padding: 10px 16px;
+  }
+
+  .brand-logo-glow {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  .glass-search {
+    height: 40px;
+  }
+
+  .status-pill span:last-child {
+    display: none;
+    /* show only dot on very small screens */
+  }
+
+  .status-pill {
+    padding: 8px;
+    border-radius: 50%;
+    min-width: 34px;
+    min-height: 34px;
+    justify-content: center;
+  }
+
+  .alert-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* ── Layout ── */
+  .main-layout {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  /* ── Device Grid: 2 columns ── */
+  .device-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .glass-card {
+    padding: 16px;
+    gap: 16px;
+    border-radius: 20px;
+  }
+
+  .card-title {
+    font-size: 15px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+  }
+
+  .icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .icon-box .material-symbols-rounded {
+    font-size: 24px;
+  }
+
+  .device-grid-area {
+    padding: 14px;
+    border-radius: 20px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — SMALL MOBILE (≤480px)
+═══════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .glass-header {
+    padding: 8px 12px;
+  }
+
+  .header-title {
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+
+  .main-layout {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  /* Single column on very small phones */
+  .device-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .glass-card {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .device-grid-area {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .nav-btn {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+
+  .nav-btn .material-symbols-rounded {
+    font-size: 18px;
+  }
+
+  /* Camera cards span full width */
+  .glass-card.is-camera {
+    grid-column: 1 / -1;
+  }
+
+  /* Alerts panel full-width clean */
+  .glass-alerts-panel {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .alerts-header {
+    margin-bottom: 12px;
+  }
+
+  /* Safe area for iOS notch/home indicator */
+  .app {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — TINY SCREENS (≤360px)
+═══════════════════════════════════════════ */
+@media (max-width: 360px) {
+  .header-title {
+    font-size: 14px;
+  }
+
+  .brand-logo-glow {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .glass-card {
+    padding: 12px;
+    gap: 12px;
+  }
 }
