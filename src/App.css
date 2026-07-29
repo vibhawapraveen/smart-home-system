@@ -73,6 +73,7 @@ body {
   animation: mesh-rotate 40s linear infinite;
   pointer-events: none;
 }
+
 /* Very slow rotation to keep the background feeling alive but subtle */
 @keyframes mesh-rotate {
   0% {
@@ -386,6 +387,7 @@ body {
   );
   border-color: rgba(var(--glow-color), 0.3);
 }
+
 /* When a card is "on", set `--glow-color` (e.g. "56,189,248") on the card element
    to tint the card with an accent color. Use RGB values without the surrounding rgb(). */
 
@@ -497,6 +499,7 @@ body {
   transform: translateX(24px);
   background: rgb(var(--glow-color));
 }
+
 /* Toggle thumb slides to the right when enabled (visual state only). */
 
 .spinner {
@@ -593,6 +596,7 @@ body {
     transform: scale(0.8);
   }
 }
+
 /* Pulse animation used for small status dots (online, recording, alerts). */
 
 .camera-feed {
@@ -601,6 +605,7 @@ body {
   aspect-ratio: 16/9;
   background: #000;
 }
+
 /* Camera feed uses a 16:9 aspect ratio box; replace image or video inside this container. */
 
 .camera-feed img {
@@ -805,10 +810,14 @@ body {
   .header-brand {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
   }
 
   .header-title {
     font-size: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .glass-search {
@@ -820,11 +829,13 @@ body {
 
   .header-actions {
     gap: 10px;
+    flex-shrink: 0;
   }
 
   .status-pill {
     padding: 6px 12px;
     font-size: 12px;
+    flex-shrink: 0;
   }
 
   /* ── Layout ── */
@@ -945,11 +956,14 @@ body {
   }
 
   .status-pill {
-    padding: 8px;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
     border-radius: 50%;
-    min-width: 34px;
-    min-height: 34px;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .alert-btn {
