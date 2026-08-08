@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   db,
   HOME_ID,
@@ -7,6 +7,7 @@ import {
   toggleDeviceState,
   updateSwitchState,
   subscribeToAlerts,
+  ironAutoCutoff,
 } from "./firebase";
 import { onSnapshot } from "firebase/firestore";
 import DeviceCard from "./components/DeviceCard";
@@ -23,6 +24,8 @@ function App() {
   const [selectedType, setSelectedType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isConnected, setIsConnected] = useState(true);
+  // Tracks active safety cutoff timers: deviceId -> timeoutId
+  const ironTimers = useRef({});
 
   // Subscribe to Firestore devices
   useEffect(() => {
@@ -55,6 +58,65 @@ function App() {
     const unsub = subscribeToAlerts(HOME_ID, setAlerts);
     return () => unsub();
   }, []);
+
+  // ── Client-side Iron Safety Cutoff ──────────────────────────────
+  // Replaces the Cloud Function checkSafetyCutoffs for local operation.
+  // For each IRON that is ON with a known onSince, schedules a timeout
+  // to fire ironAutoCutoff() at the correct remaining time.
+  useEffect(() => {
+    const ironDevices = devices.filter(
+      (d) => d.type === "IRON" && d.state === "ON" && d.onSince
+    );
+
+    const currentIds = new Set(ironDevices.map((d) => d.id));
+
+    // Clear timers for irons that are now OFF or no longer have onSince
+    Object.keys(ironTimers.current).forEach((id) => {
+      if (!currentIds.has(id)) {
+        clearTimeout(ironTimers.current[id]);
+        delete ironTimers.current[id];
+      }
+    });
+
+    ironDevices.forEach((device) => {
+      // Already has a timer running for this device — skip
+      if (ironTimers.current[device.id]) return;
+
+      const onSince = device.onSince?.toDate
+        ? device.onSince.toDate()
+        : device.onSince?.seconds
+        ? new Date(device.onSince.seconds * 1000)
+        : null;
+
+      if (!onSince) return;
+
+      const maxMs = (device.maxOnDurationMinutes || 30) * 60 * 1000;
+      const elapsedMs = Date.now() - onSince.getTime();
+      const remainingMs = maxMs - elapsedMs;
+
+      if (remainingMs <= 0) {
+        // Already overdue — cut off immediately
+        ironAutoCutoff(device.id, device.name, device.maxOnDurationMinutes);
+        return;
+      }
+
+      console.log(
+        `[Safety] Scheduling auto-off for "${device.name}" in ${Math.round(remainingMs / 1000)}s`
+      );
+
+      ironTimers.current[device.id] = setTimeout(() => {
+        console.log(`[Safety] Auto-cutting off "${device.name}"`);
+        ironAutoCutoff(device.id, device.name, device.maxOnDurationMinutes);
+        delete ironTimers.current[device.id];
+      }, remainingMs);
+    });
+
+    // Cleanup all timers on unmount
+    return () => {
+      Object.values(ironTimers.current).forEach(clearTimeout);
+    };
+  }, [devices]);
+  // ────────────────────────────────────────────────────────────────
 
   const handleToggle = useCallback(async (deviceId, currentState) => {
     try {

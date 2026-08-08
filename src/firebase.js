@@ -3,7 +3,7 @@
 // from: Firebase Console → Project Settings → General → Web apps
 // ─────────────────────────────────────────────────────────
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, collection, doc, updateDoc, deleteField, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { getDatabase, ref, onValue, push, set } from "firebase/database";
 
 const firebaseConfig = {
@@ -31,12 +31,43 @@ export const floorsRef = (homeId = HOME_ID) =>
 
 export async function toggleDeviceState(deviceId, currentState, homeId = HOME_ID) {
   const newState = currentState === "ON" ? "OFF" : "ON";
-  await updateDoc(doc(db, `homes/${homeId}/devices/${deviceId}`), {
+  const update = {
     state: newState,
     lastUpdated: serverTimestamp(),
-    ...(newState === "ON" ? { onSince: serverTimestamp() } : { onSince: null })
-  });
+  };
+  // Stamp onSince when turning ON so the client-side safety cutoff can track time
+  if (newState === "ON") {
+    update.onSince = serverTimestamp();
+  } else {
+    update.onSince = deleteField();
+  }
+  await updateDoc(doc(db, `homes/${homeId}/devices/${deviceId}`), update);
   return newState;
+}
+
+/**
+ * Forces an iron device OFF after its maxOnDurationMinutes has elapsed.
+ * Mimics what the Cloud Function checkSafetyCutoffs would do.
+ * Also pushes a safety alert to RTDB so the notification feed shows it.
+ */
+export async function ironAutoCutoff(deviceId, deviceName, durationMinutes, homeId = HOME_ID) {
+  // Turn the iron OFF and clear onSince
+  await updateDoc(doc(db, `homes/${homeId}/devices/${deviceId}`), {
+    state: "OFF",
+    onSince: deleteField(),
+    lastUpdated: serverTimestamp(),
+  });
+
+  // Push a safety alert to RTDB (same structure as the Cloud Function)
+  const alertsRef = ref(rtdb, `homes/${homeId}/alerts`);
+  const newAlertRef = push(alertsRef);
+  await set(newAlertRef, {
+    deviceId,
+    deviceName,
+    message: `⚠️ ${deviceName} was auto-OFF after ${durationMinutes} minutes (safety cutoff)`,
+    timestamp: Date.now(),
+    type: "SAFETY_CUTOFF",
+  });
 }
 
 export async function updateSwitchState(deviceId, switchKey, newState, homeId = HOME_ID) {

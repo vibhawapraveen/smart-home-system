@@ -126,12 +126,17 @@ export default function DeviceCard({ device, floorName, onToggle, onSwitchToggle
           )}
 
           {/* EXTRA BANNERS */}
-          {device.type === "IRON" && isOn && (
-            <div className="glass-banner warning">
-               <span className="material-symbols-rounded">local_fire_department</span>
-               <span>Auto-off in <b>{device.maxOnDurationMinutes}m</b></span>
-            </div>
-          )}
+          {device.type === "IRON" && isOn && (() => {
+            const onSince = device.onSince?.toDate ? device.onSince.toDate() : (device.onSince?.seconds ? new Date(device.onSince.seconds * 1000) : null);
+            const elapsedMin = onSince ? Math.floor((Date.now() - onSince.getTime()) / 60000) : 0;
+            const remainingMin = Math.max(0, (device.maxOnDurationMinutes || 30) - elapsedMin);
+            return (
+              <div className="glass-banner warning">
+                 <span className="material-symbols-rounded">local_fire_department</span>
+                 <span>Auto-off in <b>{remainingMin}m</b> (max {device.maxOnDurationMinutes}m)</span>
+              </div>
+            );
+          })()}
           {device.type === "LIGHT" && device.scheduleEnabled && (
             <div className="glass-banner">
                <span className="material-symbols-rounded">schedule</span>
