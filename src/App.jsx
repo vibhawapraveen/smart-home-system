@@ -63,10 +63,7 @@ function App() {
   // Replaces the Cloud Function checkSafetyCutoffs for local operation.
   // For each IRON that is ON with a known onSince, schedules a timeout
   // to fire ironAutoCutoff() at the correct remaining time.
-  //
-  // 🧪 TEST MODE: Override to 1 minute for quick testing.
-  //    Change TEST_IRON_MINUTES to device.maxOnDurationMinutes for production.
-  const TEST_IRON_MINUTES = 1;
+
 
   useEffect(() => {
     const ironDevices = devices.filter(
@@ -95,7 +92,7 @@ function App() {
 
       if (!onSince) return;
 
-      const effectiveMinutes = TEST_IRON_MINUTES; // 🧪 swap to device.maxOnDurationMinutes for production
+      const effectiveMinutes = device.maxOnDurationMinutes || 30;
       const maxMs = effectiveMinutes * 60 * 1000;
       const elapsedMs = Date.now() - onSince.getTime();
       const remainingMs = maxMs - elapsedMs;
@@ -106,7 +103,7 @@ function App() {
       }
 
       console.log(
-        `[Safety] 🧪 TEST MODE — Scheduling auto-off for "${device.name}" in ${Math.round(remainingMs / 1000)}s`
+        `[Safety] Scheduling auto-off for "${device.name}" in ${Math.round(remainingMs / 1000)}s (${effectiveMinutes}min limit)`
       );
 
       ironTimers.current[device.id] = setTimeout(() => {
