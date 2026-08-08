@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const DEVICE_CONFIG = {
   OUTLET: { icon: "outlet", glow: "56, 189, 248" }, // Sky Blue
@@ -7,6 +7,15 @@ const DEVICE_CONFIG = {
   LIGHT: { icon: "lightbulb", glow: "253, 224, 71" }, // Yellow
   CAMERA: { icon: "nest_cam_indoor", glow: "52, 211, 153" }, // Emerald
 };
+
+const getCameraVideo = (name) => {
+  const n = (name || "").toLowerCase();
+  if (n.includes("front")) return "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4";
+  if (n.includes("basement")) return "https://www.w3schools.com/html/mov_bbb.mp4";
+  if (n.includes("hallway")) return "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+  return "https://www.w3schools.com/html/mov_bbb.mp4";
+};
+
 
 function GlassToggle({ isOn, isLoading, disabled, onChange }) {
   return (
@@ -27,6 +36,13 @@ function GlassToggle({ isOn, isLoading, disabled, onChange }) {
 export default function DeviceCard({ device, floorName, onToggle, onSwitchToggle }) {
   const [isToggling, setIsToggling] = useState(false);
   const [expandedCamera, setExpandedCamera] = useState(false);
+
+  // Reset expanded camera state if the camera is turned off
+  useEffect(() => {
+    if (device.state !== "ON") {
+      setExpandedCamera(false);
+    }
+  }, [device.state]);
 
   const config = DEVICE_CONFIG[device.type] || DEVICE_CONFIG.OUTLET;
   const isOn = device.state === "ON";
@@ -56,23 +72,45 @@ export default function DeviceCard({ device, floorName, onToggle, onSwitchToggle
       {/* ── CAMERA LAYOUT ── */}
       {device.type === "CAMERA" ? (
         <div className="camera-container">
-           <div className="camera-header">
-             <div className="camera-badge"><div className="recording-dot"></div> LIVE</div>
+           <div className="camera-header" style={{ justifyContent: "space-between", alignItems: "center" }}>
+             <div className="camera-badge" style={{ opacity: isOn ? 1 : 0.6 }}>
+                {isOn && <div className="recording-dot"></div>} {isOn ? 'LIVE' : 'OFFLINE'}
+             </div>
+             <GlassToggle 
+                isOn={isOn} 
+                isLoading={isToggling} 
+                disabled={!isInteractable} 
+                onChange={handleToggle} 
+             />
            </div>
            <div 
              className="camera-feed" 
-             onClick={(e) => { e.stopPropagation(); setExpandedCamera(!expandedCamera); }}
+             onClick={(e) => { e.stopPropagation(); if (isOn) setExpandedCamera(!expandedCamera); }}
            >
-             <img src={device.cameraSnapshotUrl || `https://picsum.photos/400/225?random=${device.id}`} alt="Camera feed" />
-             <div className="camera-overlay">
-                <span className="material-symbols-rounded play-icon">play_circle</span>
-             </div>
+             {!isOn ? (
+               <div style={{ width: "100%", height: "100%", backgroundColor: "#000", display: "flex", alignItems: "center", justifyContent: "center", color: "#666" }}>
+                 <span className="material-symbols-rounded">videocam_off</span>
+               </div>
+              ) : expandedCamera ? (
+               <video 
+                 src={getCameraVideo(device.name)}
+                 autoPlay loop muted playsInline
+                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
+               />
+             ) : (
+               <>
+                 <img src={device.cameraSnapshotUrl || `https://picsum.photos/seed/${device.id}/400/225`} alt="Camera feed" />
+                 <div className="camera-overlay">
+                    <span className="material-symbols-rounded play-icon">play_circle</span>
+                 </div>
+               </>
+             )}
            </div>
            <div className="card-content" style={{ padding: '20px' }}>
              <div className="card-title">{device.name}</div>
              <div className="card-subtitle">{device.roomName || floorName}</div>
            </div>
-           {expandedCamera && (
+           {expandedCamera && isOn && (
              <div className="camera-url-panel">
                <code>{device.cameraStreamUrl || "rtsp://camera.stream/live"}</code>
              </div>
