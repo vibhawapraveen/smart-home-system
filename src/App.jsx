@@ -8,6 +8,7 @@ import {
   updateSwitchState,
   subscribeToAlerts,
   ironAutoCutoff,
+  onAuthReady,
 } from "./firebase";
 import { onSnapshot } from "firebase/firestore";
 import DeviceCard from "./components/DeviceCard";
@@ -23,12 +24,23 @@ function App() {
   const [selectedFloor, setSelectedFloor] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   // Tracks active safety cutoff timers: deviceId -> timeoutId
   const ironTimers = useRef({});
 
-  // Subscribe to Firestore devices
+  // Wait for anonymous auth to complete before subscribing
   useEffect(() => {
+    const unsub = onAuthReady((user) => {
+      if (user) setAuthReady(true);
+    });
+    return () => unsub();
+  }, []);
+
+  // Subscribe to Firestore devices — only after auth is ready
+  useEffect(() => {
+    if (!authReady) return;
+
     const unsubDevices = onSnapshot(
       devicesRef(HOME_ID),
       (snap) => {
@@ -51,13 +63,14 @@ function App() {
       unsubDevices();
       unsubFloors();
     };
-  }, []);
+  }, [authReady]);
 
-  // Subscribe to RTDB alerts
+  // Subscribe to RTDB alerts — only after auth is ready
   useEffect(() => {
+    if (!authReady) return;
     const unsub = subscribeToAlerts(HOME_ID, setAlerts);
     return () => unsub();
-  }, []);
+  }, [authReady]);
 
   // ── Client-side Iron Safety Cutoff ──────────────────────────────
   // Replaces the Cloud Function checkSafetyCutoffs for local operation.

@@ -53,21 +53,15 @@ body {
   width: 200%;
   height: 200%;
   background:
-    radial-gradient(
-      circle at 20% 30%,
+    radial-gradient(circle at 20% 30%,
       rgba(56, 189, 248, 0.05) 0%,
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 80% 70%,
+      transparent 35%),
+    radial-gradient(circle at 80% 70%,
       rgba(192, 132, 252, 0.04) 0%,
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
+      transparent 35%),
+    radial-gradient(circle at 50% 50%,
       rgba(253, 224, 71, 0.02) 0%,
-      transparent 40%
-    );
+      transparent 40%);
   /* Subtle colored mesh overlay for depth and ambience */
   z-index: -1;
   animation: mesh-rotate 40s linear infinite;
@@ -317,12 +311,10 @@ body {
 
 .nav-divider {
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent);
 }
 
 /* ═══════════════════════════════════════════
@@ -373,11 +365,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.03) 0%,
-    transparent 50%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      transparent 50%);
   pointer-events: none;
 }
 
@@ -388,11 +378,9 @@ body {
 }
 
 .glass-card.is-on {
-  background: linear-gradient(
-    160deg,
-    rgba(var(--glow-color), 0.08),
-    rgba(20, 20, 25, 0.6)
-  );
+  background: linear-gradient(160deg,
+      rgba(var(--glow-color), 0.08),
+      rgba(20, 20, 25, 0.6));
   border-color: rgba(var(--glow-color), 0.3);
 }
 
@@ -593,6 +581,7 @@ body {
 }
 
 @keyframes pulse-ring {
+
   0%,
   100% {
     opacity: 1;

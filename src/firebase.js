@@ -5,6 +5,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, updateDoc, deleteField, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { getDatabase, ref, onValue, push, set } from "firebase/database";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDo1ZkFPj_aeikNDI5c-xf7PnJcCDKWunI",
@@ -19,6 +20,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const rtdb = getDatabase(app);
+export const auth = getAuth(app);
+
+// ── Anonymous Auth ──
+// Signs in silently so Firestore security rules (request.auth != null) are satisfied.
+// No login screen needed — the user is automatically authenticated as an anonymous guest.
+signInAnonymously(auth).catch((err) => {
+  console.error("Anonymous sign-in failed:", err.code, err.message);
+});
+
+export const onAuthReady = (callback) => onAuthStateChanged(auth, callback);
 
 export const HOME_ID = "home_001";
 
